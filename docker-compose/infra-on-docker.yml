@@ -1,0 +1,41 @@
+version: '3.1'
+
+services:
+  milet-sonarqube:
+    image: sonarqube:9.4.0-developer
+    restart: always
+    container_name: sonarqube-milet
+    ports:
+      - 9033:9000
+  
+  milet-postgres:
+    image: postgres:14.3-alpine
+    restart: always
+    container_name: milet-postgres
+    environment: 
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+      POSTGRES_DB: MiletDatabase
+    networks:
+      - milet-net
+
+  milet-pgAdmin:
+    image: dpage/pgadmin4:6.7
+    container_name: pgadmin4-milet
+    depends_on:
+      - milet-postgres
+    restart: always
+    ports:
+      - 9046:80
+      - 9047:443
+    environment:
+      PGADMIN_DEFAULT_EMAIL: milet@avanade.com
+      PGADMIN_DEFAULT_PASSWORD: abc123
+      PGADMIN_DEFAULT_POSTFIX: "true"
+    networks:
+      - milet-net
+
+
+networks:
+  milet-net:
+    driver: bridge
